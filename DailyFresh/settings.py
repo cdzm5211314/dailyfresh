@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# 把apps目录添加进环境中
+sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -37,6 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tinymce',  # 富文本编辑器,安装: pip install django-tinymce
+    'user',  # 用户模块
+    'goods', # 商品模块
+    'order', # 订单模块
+    'cart',  # 购物车模块
 ]
 
 MIDDLEWARE = [
@@ -54,7 +62,7 @@ ROOT_URLCONF = 'DailyFresh.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],  # 配置模版路径
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,13 +81,20 @@ WSGI_APPLICATION = 'DailyFresh.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# 配置数据库
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dailyfresh',  # 数据库名称
+        'USER':'root',  # mysql数据库用户名
+        'PASSWORD':'root',  # mysql数据库登陆密码
+        'HOST':'localhost',  # IP地址
+        'PORT':'3306',  # 端口号
+     }
 }
 
+# django认证系统指定使用的模型类
+AUTH_USER_MODEL = 'user.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -118,3 +133,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+# 配置静态文件路径
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR,'static'),
+)
+
+# 富文本编辑器配置: 安装: pip install django-tinymce
+TINYMCE_DEFAULT_CONFIG = {
+    'theme':'advanced',  # 主题模式:高级
+    'width': 600,  # 富文本宽度
+    'height': 400,  # 富文本高度
+}
+
+
+
