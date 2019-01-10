@@ -1,6 +1,0 @@
-Django==1.11.6
-django-tinymce==2.6.0
-Pillow==5.4.1
-PyMySQL==0.9.3
-pytz==2018.9
-pywin32==224
