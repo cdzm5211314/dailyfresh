@@ -11,13 +11,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# 把apps目录添加进环境中
-sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -40,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps',    # 配置apps总应用
     'tinymce',  # 富文本编辑器,安装: pip install django-tinymce
     'user',  # 用户模块
     'goods', # 商品模块
@@ -93,9 +90,6 @@ DATABASES = {
      }
 }
 
-# django认证系统指定使用的模型类
-AUTH_USER_MODEL = 'user.User'
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -145,5 +139,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'height': 400,  # 富文本高度
 }
 
+import sys
+# 把apps应用目录添加进系统环境中
+sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
-
+# django认证系统指定使用的模型类
+AUTH_USER_MODEL = 'user.User'
