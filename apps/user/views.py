@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired  # 过期异常
 
+from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
 from apps.user.models import User
 import re
 
@@ -164,7 +165,11 @@ class RegisterView(View):
         token = serializer.dumps(info)  # 加密身份信息,数据类型为bytes类型
         token = token.decode()  # 把bytes数据转换成字符串类型数据,decode()默认是utf-8
 
-        # 给注册用户发送邮件
+        # 给注册用户发送邮件:
+        # from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
+        # send_register_active_email.delay(email,username,token)  # 发出任务
+
+        # 给注册用户发送邮件:
         subject = '天天生鲜欢迎信息'  # 邮件主题信息
         # 邮件正文内容,message不能解析html信息,所以需要使用:html_message
         message = ''
