@@ -127,6 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
 # 配置静态文件路径
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR,'static'),
@@ -145,3 +146,13 @@ sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
 # django认证系统指定使用的模型类
 AUTH_USER_MODEL = 'user.User'
+
+# 发送邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'  # smpt服务地址
+EMAIL_PORT = 25  # 端口号
+EMAIL_HOST_USER = 'configureadmin@163.com'  # 发送邮件的邮箱
+EMAIL_HOST_PASSWORD = 'asdfghjkl123456'  # 在邮箱中设置的客户端授权密码
+EMAIL_FROM = '天天生鲜<configureadmin@163.com>'  # 收件人看到的发件人
+
+

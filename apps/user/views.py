@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.views.generic import View
 from django.conf import settings
+from django.core.mail import send_mail
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired  # 过期异常
@@ -47,7 +48,7 @@ def register(request):
             return render(request, 'register.html', {'errormessage': '用户名已经存在'})
 
         # 业务处理,进行用户注册
-        user = User.objects.create_user(username, password, email)  # 默认是账号注册后是激活状态
+        user = User.objects.create_user(username, password, email)  # 默认账号注册后是激活状态
         user.is_active = 0  # 设置用户不是激活状态
         user.save()
 
@@ -60,7 +61,15 @@ def register(request):
         info = {"confirm": user.id}  # 用户的id,唯一性
         token = serializer.dumps(info)  # 加密身份信息
 
-        # 发送邮件
+        # 给注册用户发送邮件
+        subject = '天天生鲜欢迎信息'  # 邮件标题信息
+        # 邮件正文内容,message不能解析html信息,所以使用:html_message
+        message = ''
+        html_message = '<h1>%s,欢迎你成为天天生鲜注册会员,</h1>请点击下面链接激活你的账户<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
+            username, token, token)
+        from_email = settings.EMAIL_FROM  # 发件人件人邮箱
+        recipient_list = [email]  # 收件人邮箱列表
+        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
 
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
@@ -97,7 +106,7 @@ def register_handle(request):
         return render(request, 'register.html', {'errormessage': '用户名已经存在'})
 
     # 业务处理,进行用户注册
-    user = User.objects.create_user(username, password, email)  # 默认是账号注册后是激活状态
+    user = User.objects.create_user(username, password, email)  # 默认账号注册后是激活状态
     user.is_active = 0  # 设置为不是激活状态
     user.save()
 
@@ -107,7 +116,6 @@ def register_handle(request):
 # /user/register
 class RegisterView(View):
     '''使用类视图显示注册页面和处理注册用户请求'''
-
     def get(self, request):
         # 显示注册页面
         return render(request, 'register.html')
@@ -142,7 +150,7 @@ class RegisterView(View):
             return render(request, 'register.html', {'errormessage': '用户名已经存在'})
 
         # 业务处理,进行用户注册
-        user = User.objects.create_user(username, password, email)  # 默认是账号注册后是激活状态
+        user = User.objects.create_user(username, password, email)  # 默认账号注册后是激活状态
         user.is_active = 0  # 设置为不是激活状态
         user.save()
 
@@ -153,9 +161,18 @@ class RegisterView(View):
         from django.conf import settings
         serializer = Serializer(settings.SECRET_KEY, 3600)  # 设置一小时后过期
         info = {"confirm": user.id}  # 用户的id,唯一性
-        token = serializer.dumps(info)  # 加密身份信息
+        token = serializer.dumps(info)  # 加密身份信息,数据类型为bytes类型
+        token = token.decode()  # 把bytes数据转换成字符串类型数据,decode()默认是utf-8
 
-        # 发送邮件
+        # 给注册用户发送邮件
+        subject = '天天生鲜欢迎信息'  # 邮件主题信息
+        # 邮件正文内容,message不能解析html信息,所以需要使用:html_message
+        message = ''
+        from_email = settings.EMAIL_FROM  # 发件人邮箱
+        recipient_list = [email]  # 收件人邮箱列表
+        html_message = '<h1>%s,欢迎你成为天天生鲜注册会员,</h1>请点击下面链接激活你的账户<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
+        username, token, token)
+        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
 
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
@@ -163,7 +180,6 @@ class RegisterView(View):
 # /user/active
 class ActiveView(View):
     '''用户激活 - 类视图'''
-
     def get(self, request, token):
         # 进行解密,获取要激活的用户
         from django.conf import settings
@@ -185,9 +201,11 @@ class ActiveView(View):
 # /user/login
 class LoginView(View):
     '''登陆'''
-    def get(self,request):
+    def get(self, request):
         '''显示登陆页面'''
-        return render(request,'login.html')
+        return render(request, 'login.html')
+
+
 
 
 
