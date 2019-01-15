@@ -217,7 +217,14 @@ class LoginView(View):
 
     def get(self, request):
         '''显示登陆页面'''
-        return render(request, 'login.html')
+        # 判断是否记住了用户名
+        if 'username' in request.COOKIES:
+            username = request.COOKIES.get('username')
+            checked = 'checked'  # ???
+        else:
+            username = ''
+            checked = ''  # ???
+        return render(request, 'login.html',{'username':username,'checked':checked})
 
     def post(self, request):
         '''用户登陆校验'''
@@ -231,11 +238,20 @@ class LoginView(View):
         # 登陆校验: 使用django内置的认证系统
         # user = authenticate(username="root1", password="12345678")  # 认证成功返回User对象,失败返回None
         user = authenticate(username=username, password=password)  # 认证成功返回User对象,失败返回None
-        print(user)
+        # print(user)
         if user is not None:  # 认证成功: 用户名和密码正确
             if user.is_active:  # 用户已激活
                 login(request, user)  # 记录用户的登陆状态
-                return redirect(reverse('goods:index'))  # 跳转到首页
+                response = redirect(reverse('goods:index'))  # 跳转到首页: HttpResponseRedirect
+
+                # 判断用户是否记住用户名
+                remember = request.POST.get('remember')
+                if remember == 'on':  # 已选中记住用户名
+                    response.set_cookie('username', username, max_age=7 * 24 * 3600)
+                else:
+                    response.delete_cookie('username')
+                return response # 跳转到首页
+
             # ??? 已注册但未激活用户进不来????
             # settings配置默认检查用户是否活跃状态is_axtive,不活跃返回None
             # AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']

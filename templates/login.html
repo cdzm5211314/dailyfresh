@@ -25,12 +25,12 @@
 					<form method="post">
 {#					<form method="post">  当action不写的时候,浏览器上访问的是什么地址,action就是什么地址#}
                         {% csrf_token %}
-						<input type="text" name="username" class="name_input" placeholder="请输入用户名">
+						<input type="text" name="username" class="name_input" value="{{ username }}" placeholder="请输入用户名">
 						<div class="user_error">输入错误</div>
 						<input type="password" name="pwd" class="pass_input" placeholder="请输入密码">
 						<div class="pwd_error">输入错误</div>
 						<div class="more_input clearfix">
-							<input type="checkbox" name="remember">
+							<input type="checkbox" name="remember" {{ checked }}> {# ??? #}
 							<label>记住用户名</label>
 							<a href="#">忘记密码</a>
 						</div>

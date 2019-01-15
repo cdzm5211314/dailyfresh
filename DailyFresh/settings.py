@@ -170,15 +170,17 @@ EMAIL_FROM = '天天生鲜<configureadmin@163.com>'  # 收件人看到的发件�
 # SESSION_REDIS_DB = 2
 # SESSION_REDIS_PASSWORD = ''
 # SESSION_REDIS_PREFIX = 'session'
+
 # 2.第二种配置:将django项目的缓存设置为redis,然后将session的存储地方设置到django项目的缓存中
 # ①.)安装: pip install django-redis
 # ②.)配置redis作为django项目的缓存设置:
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/16",  # 设置redis服务的IP地址与端口号以及哪个数据库
+        "LOCATION": "redis://127.0.0.1:6379/1",  # 设置redis服务的IP地址与端口号以及哪个数据库
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "password",
         }
     }
 }
