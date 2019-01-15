@@ -146,6 +146,10 @@ sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
 # django认证系统指定使用的模型类
 AUTH_USER_MODEL = 'user.User'
+# settings配置默认检查用户是否活跃状态is_axtive,不活跃返回None
+# AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+# settings配置设置不检查用户的活跃状态is_active
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
 
 # 发送邮件配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic import View
 from django.conf import settings
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login, logout
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired  # 过期异常
@@ -75,6 +76,7 @@ def register(request):
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
 
+
 # /user/register_handle
 def register_handle(request):
     '''处理注册请求'''
@@ -114,9 +116,11 @@ def register_handle(request):
     # 返回应答,跳转到主页
     return redirect(reverse('goods:index'))
 
+
 # /user/register
 class RegisterView(View):
     '''使用类视图显示注册页面和处理注册用户请求'''
+
     def get(self, request):
         # 显示注册页面
         return render(request, 'register.html')
@@ -151,7 +155,8 @@ class RegisterView(View):
             return render(request, 'register.html', {'errormessage': '用户名已经存在'})
 
         # 业务处理,进行用户注册
-        user = User.objects.create_user(username, password, email)  # 默认账号注册后是激活状态
+        # user = User.objects.create_user(username, email, password)  # 默认账号注册后是激活状态
+        user = User.objects.create_user(username=username, email=email, password=password)  # 默认账号注册后是激活状态
         user.is_active = 0  # 设置为不是激活状态
         user.save()
 
@@ -176,15 +181,17 @@ class RegisterView(View):
         from_email = settings.EMAIL_FROM  # 发件人邮箱
         recipient_list = [email]  # 收件人邮箱列表
         html_message = '<h1>%s,欢迎你成为天天生鲜注册会员,</h1>请点击下面链接激活你的账户<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
-        username, token, token)
+            username, token, token)
         send_mail(subject, message, from_email, recipient_list, html_message=html_message)
 
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
 
+
 # /user/active
 class ActiveView(View):
     '''用户激活 - 类视图'''
+
     def get(self, request, token):
         # 进行解密,获取要激活的用户
         from django.conf import settings
@@ -203,16 +210,38 @@ class ActiveView(View):
             # 激活链接已过期
             return HttpResponse("激活链接已过期")
 
+
 # /user/login
 class LoginView(View):
     '''登陆'''
+
     def get(self, request):
         '''显示登陆页面'''
         return render(request, 'login.html')
 
+    def post(self, request):
+        '''用户登陆校验'''
+        username = request.POST.get('username')
+        password = request.POST.get('pwd')
 
+        # 用户名与密码校验
+        if not all([username, password]):
+            return render(request, 'login.html', {'errormessage': '数据不完整'})
 
-
-
-
-
+        # 登陆校验: 使用django内置的认证系统
+        # user = authenticate(username="root1", password="12345678")  # 认证成功返回User对象,失败返回None
+        user = authenticate(username=username, password=password)  # 认证成功返回User对象,失败返回None
+        print(user)
+        if user is not None:  # 认证成功: 用户名和密码正确
+            if user.is_active:  # 用户已激活
+                login(request, user)  # 记录用户的登陆状态
+                return redirect(reverse('goods:index'))  # 跳转到首页
+            # ??? 已注册但未激活用户进不来????
+            # settings配置默认检查用户是否活跃状态is_axtive,不活跃返回None
+            # AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+            # settings配置设置不检查用户的活跃状态is_active
+            # AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
+            else:  # 用户未激活
+                return render(request, 'login.html', {'errormessage': '用户未激活...'})
+        else:  # 认证失败: 用户名或密码错误
+            return render(request, 'login.html', {'errormessage': '用户名或密码错误...'})
