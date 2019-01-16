@@ -77,7 +77,6 @@ def register(request):
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
 
-
 # /user/register_handle
 def register_handle(request):
     '''处理注册请求'''
@@ -116,7 +115,6 @@ def register_handle(request):
 
     # 返回应答,跳转到主页
     return redirect(reverse('goods:index'))
-
 
 # /user/register
 class RegisterView(View):
@@ -188,7 +186,6 @@ class RegisterView(View):
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
 
-
 # /user/active
 class ActiveView(View):
     '''用户激活 - 类视图'''
@@ -210,7 +207,6 @@ class ActiveView(View):
         except SignatureExpired as s:
             # 激活链接已过期
             return HttpResponse("激活链接已过期")
-
 
 # /user/login
 class LoginView(View):
@@ -268,12 +264,18 @@ class LoginView(View):
         else:  # 认证失败: 用户名或密码错误
             return render(request, 'login.html', {'errormessage': '用户名或密码错误...'})
 
+# /user/logout
+class LogoutView(View):
+    '''用户退出操作'''
+    def get(self,request):
+        # 消除用户的session信息
+        logout(request)  # 退出登陆操作
+        return redirect(reverse('goods:index'))  # 跳转到首页
 
 # Django会给request对象添加一个属性request.user
 # 如果用户未登录->user是AnonymousUser类的一个实例对象
 # 如果用户登录->user是User类的一个实例对象
 # request.user.is_authenticated() # 在模版也是存在的
-
 
 # /user
 class UserInfoView(LoginRequiredMixin,View):
