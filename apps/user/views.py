@@ -11,6 +11,7 @@ from itsdangerous import SignatureExpired  # 过期异常
 
 from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
 from apps.user.models import User
+from utils.mixin import LoginRequiredMixin
 import re
 
 
@@ -242,7 +243,12 @@ class LoginView(View):
         if user is not None:  # 认证成功: 用户名和密码正确
             if user.is_active:  # 用户已激活
                 login(request, user)  # 记录用户的登陆状态
-                response = redirect(reverse('goods:index'))  # 跳转到首页: HttpResponseRedirect
+
+                # 获取登陆后要跳转的地址
+                # 默认跳转到首页
+                next_url = request.GET.get('next', reverse('goods:index'))
+                print(next_url)
+                response = redirect(next_url)  # 跳转到首页: HttpResponseRedirect
 
                 # 判断用户是否记住用户名
                 remember = request.POST.get('remember')
@@ -263,21 +269,21 @@ class LoginView(View):
             return render(request, 'login.html', {'errormessage': '用户名或密码错误...'})
 
 # /user
-class UserInfoView(View):
+class UserInfoView(LoginRequiredMixin,View):
     '''用户中心-信息页'''
     def get(self,request):
 
         return render(request,'user_center_info.html',{'page':'user'})
 
 # /user/order
-class UserOrderView(View):
+class UserOrderView(LoginRequiredMixin,View):
     '''用户中心-订单页'''
     def get(self, request):
 
         return render(request, 'user_center_order.html',{'page':'order'})
 
 # /user/address
-class AddressView(View):
+class AddressView(LoginRequiredMixin,View):
     '''用户中心-地址页'''
     def get(self, request):
 
