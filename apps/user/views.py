@@ -261,3 +261,24 @@ class LoginView(View):
                 return render(request, 'login.html', {'errormessage': '用户未激活...'})
         else:  # 认证失败: 用户名或密码错误
             return render(request, 'login.html', {'errormessage': '用户名或密码错误...'})
+
+# /user
+class UserInfoView(View):
+    '''用户中心-信息页'''
+    def get(self,request):
+
+        return render(request,'user_center_info.html',{'page':'user'})
+
+# /user/order
+class UserOrderView(View):
+    '''用户中心-订单页'''
+    def get(self, request):
+
+        return render(request, 'user_center_order.html',{'page':'order'})
+
+# /user/address
+class AddressView(View):
+    '''用户中心-地址页'''
+    def get(self, request):
+
+        return render(request, 'user_center_site.html',{'page':'address'})
