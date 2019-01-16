@@ -268,6 +268,13 @@ class LoginView(View):
         else:  # 认证失败: 用户名或密码错误
             return render(request, 'login.html', {'errormessage': '用户名或密码错误...'})
 
+
+# Django会给request对象添加一个属性request.user
+# 如果用户未登录->user是AnonymousUser类的一个实例对象
+# 如果用户登录->user是User类的一个实例对象
+# request.user.is_authenticated() # 在模版也是存在的
+
+
 # /user
 class UserInfoView(LoginRequiredMixin,View):
     '''用户中心-信息页'''
