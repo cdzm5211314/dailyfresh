@@ -242,6 +242,7 @@ class LoginView(View):
 
                 # 获取登陆后要跳转的地址
                 # 默认跳转到首页
+                # 如果是直接访问/user/login地址.next值为None,需要设置一个默认值
                 next_url = request.GET.get('next', reverse('goods:index'))
                 print(next_url)
                 response = redirect(next_url)  # 跳转到首页: HttpResponseRedirect

@@ -180,7 +180,7 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",  # 设置redis服务的IP地址与端口号以及哪个数据库
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "password",
+            # "PASSWORD": "password",  # redis密码,如果redis设置了密码需要加上这一项
         }
     }
 }
