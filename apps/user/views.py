@@ -10,7 +10,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired  # 过期异常
 
 from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
-from apps.user.models import User,Address
+from apps.user.models import User, Address
+from apps.goods.models import GoodsSKU
 from utils.mixin import LoginRequiredMixin
 import re
 
@@ -77,6 +78,7 @@ def register(request):
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
 
+
 # /user/register_handle
 def register_handle(request):
     '''处理注册请求'''
@@ -115,6 +117,7 @@ def register_handle(request):
 
     # 返回应答,跳转到主页
     return redirect(reverse('goods:index'))
+
 
 # /user/register
 class RegisterView(View):
@@ -186,6 +189,7 @@ class RegisterView(View):
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
 
+
 # /user/active
 class ActiveView(View):
     '''用户激活 - 类视图'''
@@ -208,6 +212,7 @@ class ActiveView(View):
             # 激活链接已过期
             return HttpResponse("激活链接已过期")
 
+
 # /user/login
 class LoginView(View):
     '''登陆'''
@@ -221,7 +226,7 @@ class LoginView(View):
         else:
             username = ''
             checked = ''  # ???
-        return render(request, 'login.html',{'username':username,'checked':checked})
+        return render(request, 'login.html', {'username': username, 'checked': checked})
 
     def post(self, request):
         '''用户登陆校验'''
@@ -253,7 +258,7 @@ class LoginView(View):
                     response.set_cookie('username', username, max_age=7 * 24 * 3600)
                 else:
                     response.delete_cookie('username')
-                return response # 跳转到首页
+                return response  # 跳转到首页
 
             # ??? 已注册但未激活用户进不来????
             # settings配置默认检查用户是否活跃状态is_axtive,不活跃返回None
@@ -265,13 +270,16 @@ class LoginView(View):
         else:  # 认证失败: 用户名或密码错误
             return render(request, 'login.html', {'errormessage': '用户名或密码错误...'})
 
+
 # /user/logout
 class LogoutView(View):
     '''用户退出操作'''
-    def get(self,request):
+
+    def get(self, request):
         # 消除用户的session信息
         logout(request)  # 退出登陆操作
         return redirect(reverse('goods:index'))  # 跳转到首页
+
 
 # Django会给request对象添加一个属性request.user
 # 如果用户未登录->user是AnonymousUser类的一个实例对象
@@ -279,25 +287,53 @@ class LogoutView(View):
 # request.user.is_authenticated() # 在模版也是存在的
 
 # /user
-class UserInfoView(LoginRequiredMixin,View):
+class UserInfoView(LoginRequiredMixin, View):
     '''用户中心-信息页'''
-    def get(self,request):
+
+    def get(self, request):
         # 获取用户地址信息
         user = request.user
-        address= Address.objects.get_default_address(user)
+        address = Address.objects.get_default_address(user)
 
-        return render(request,'user_center_info.html',{'page':'user','address':address})
+        # 获取商品的历史用浏览记录
+        # 1.使用原生的redis链接redis数据
+        # from redis import StrictRedis
+        # sr = StrictRedis(host="localhost", port='6379', db=1)
+        # 2.使用redis配置的cache缓存进行链接
+        from django_redis import get_redis_connection
+        conn = get_redis_connection('default')
+
+        # 组织redis数据库中key的值
+        history_key = 'history_%d' % user.id
+
+        # 根据redis中key的值获取最近浏览的5个商品的id
+        sku_ids = conn.lrange(history_key,0,4)
+
+        # 遍历获取用户浏览的商品信息
+        goods_list = []
+        for id in sku_ids:
+            goods = GoodsSKU.objects.get(id=id)
+            goods_list.append(goods)
+
+        # 组织上下文信息
+        context = {'page': 'user', 'address': address,'goods_list':goods_list}
+
+        return render(request, 'user_center_info.html', context)
+        # return render(request, 'user_center_info.html', {'page': 'user', 'address': address,'goods_list':goods_list})
+
 
 # /user/order
-class UserOrderView(LoginRequiredMixin,View):
+class UserOrderView(LoginRequiredMixin, View):
     '''用户中心-订单页'''
-    def get(self, request):
 
-        return render(request, 'user_center_order.html',{'page':'order'})
+    def get(self, request):
+        return render(request, 'user_center_order.html', {'page': 'order'})
+
 
 # /user/address
-class AddressView(LoginRequiredMixin,View):
+class AddressView(LoginRequiredMixin, View):
     '''用户中心-地址页'''
+
     def get(self, request):
         '''获取用户默认地址'''
         # 获取登陆的用户信息
@@ -315,9 +351,9 @@ class AddressView(LoginRequiredMixin,View):
         # 使用模型管理器类封装方法来获取默认的收货地址
         address = Address.objects.get_default_address(user)
 
-        return render(request, 'user_center_site.html',{'page':'address','address':address})
+        return render(request, 'user_center_site.html', {'page': 'address', 'address': address})
 
-    def post(self,request):
+    def post(self, request):
         '''添加地址信息'''
         # 获取提交的地址信息
         receiver = request.POST.get('receiver')
@@ -326,12 +362,12 @@ class AddressView(LoginRequiredMixin,View):
         phone = request.POST.get('phone')
 
         # 校验提交数据
-        if not all([receiver,addr,phone]):
-            return render(request,'user_center_site.html',{'errmsg':'地址信息不完整'})
+        if not all([receiver, addr, phone]):
+            return render(request, 'user_center_site.html', {'errmsg': '地址信息不完整'})
 
         # 校验手机号
         if not re.match(r'^1[3|4|5|7|8][0-9]{9}$', phone):
-            return render(request, 'user_center_site.html', {'errmsg':'手机格式不正确'})
+            return render(request, 'user_center_site.html', {'errmsg': '手机格式不正确'})
 
         # 业务处理:添加地址
         # 如果用户有默认收货地址,添加的地址就不作为默认的收货地址
@@ -361,17 +397,8 @@ class AddressView(LoginRequiredMixin,View):
         # 以上代码报错:
         # ValueError: Cannot assign "<SimpleLazyObject: <User: admin1>>": "Address.user" must be a "User" instance.
 
-        Address.objects.create(user_id=user.id, receiver=receiver, addr=addr,zip_code=zip_code, phone=phone, is_default=is_default)
+        Address.objects.create(user_id=user.id, receiver=receiver, addr=addr, zip_code=zip_code, phone=phone,
+                               is_default=is_default)
 
         # 返回应答,刷新地址页面
         return redirect(reverse('user:address'))
-
-
-
-
-
-
-
-
-
-
