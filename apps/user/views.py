@@ -300,14 +300,17 @@ class AddressView(LoginRequiredMixin,View):
         # 获取登陆的用户信息
         user = request.user
         # print(user,type(user))  # django.utils.functional.SimpleLazyObject
-        try:
-            # address = Address.objects.get(user=user, is_default=True)  # is_default = True 时,为默认收货地址
-            # 上诉获取登陆用户代码报错:
-            # Cannot query "admin1": Must be "User" instance.   # admin1 <class 'django.utils.functional.SimpleLazyObject'>
-            address = Address.objects.get(user_id=user.id, is_default=True)  # is_default = True 时,为默认收货地址
-        except Address.DoesNotExist:
-            # 不存在默认的收货地址
-            address = None
+        # try:
+        #     # address = Address.objects.get(user=user, is_default=True)  # is_default = True 时,为默认收货地址
+        #     # 上诉获取登陆用户代码报错:
+        #     # Cannot query "admin1": Must be "User" instance.   # admin1 <class 'django.utils.functional.SimpleLazyObject'>
+        #     address = Address.objects.get(user_id=user.id, is_default=True)  # is_default = True 时,为默认收货地址
+        # except Address.DoesNotExist:
+        #     # 不存在默认的收货地址
+        #     address = None
+
+        # 使用模型管理器类封装方法来获取默认的收货地址
+        address = Address.objects.get_default_address(user)
 
         return render(request, 'user_center_site.html',{'page':'address','address':address})
 
@@ -333,14 +336,17 @@ class AddressView(LoginRequiredMixin,View):
 
         # 获取登陆的user对象
         user = request.user
-        try:
-            # address = Address.objects.get(user=user, is_default=True)  # is_default = True 时,为默认收货地址
-            # 上诉获取登陆用户代码报错:
-            # Cannot query "admin1": Must be "User" instance.   # admin1 <class 'django.utils.functional.SimpleLazyObject'>
-            address = Address.objects.get(user_id=user.id, is_default=True)  # is_default = True 时,为默认收货地址
-        except Address.DoesNotExist:
-            # 不存在默认的收货地址
-            address = None
+        # try:
+        #     # address = Address.objects.get(user=user, is_default=True)  # is_default = True 时,为默认收货地址
+        #     # 上诉获取登陆用户代码报错:
+        #     # Cannot query "admin1": Must be "User" instance.   # admin1 <class 'django.utils.functional.SimpleLazyObject'>
+        #     address = Address.objects.get(user_id=user.id, is_default=True)  # is_default = True 时,为默认收货地址
+        # except Address.DoesNotExist:
+        #     # 不存在默认的收货地址
+        #     address = None
+
+        # 使用模型管理器类封装方法来获取默认的收货地址
+        address = Address.objects.get_default_address(user)
 
         if address:
             is_default = False
