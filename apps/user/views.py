@@ -282,8 +282,11 @@ class LogoutView(View):
 class UserInfoView(LoginRequiredMixin,View):
     '''用户中心-信息页'''
     def get(self,request):
+        # 获取用户地址信息
+        user = request.user
+        address= Address.objects.get_default_address(user)
 
-        return render(request,'user_center_info.html',{'page':'user'})
+        return render(request,'user_center_info.html',{'page':'user','address':address})
 
 # /user/order
 class UserOrderView(LoginRequiredMixin,View):
