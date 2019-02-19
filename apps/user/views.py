@@ -376,7 +376,7 @@ class AddressView(LoginRequiredMixin, View):
         # 获取登陆的user对象
         user = request.user
         # try:
-        #     # address = Address.objects.get(user=user, is_default=True)  # is_default = True 时,为默认收货地址
+        #     # address = Address.objects.get(user=user, is_default=Te)  # is_default = True 时,为默认收货地址
         #     # 上诉获取登陆用户代码报错:
         #     # Cannot query "admin1": Must be "User" instance.   # admin1 <class 'django.utils.functional.SimpleLazyObject'>
         #     address = Address.objects.get(user_id=user.id, is_default=True)  # is_default = True 时,为默认收货地址
