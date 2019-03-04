@@ -83,7 +83,8 @@ DATABASES = {
         'NAME': 'dailyfresh',  # 数据库名称
         'USER': 'root',  # mysql数据库用户名
         'PASSWORD': 'root',  # mysql数据库登陆密码
-        'HOST': 'localhost',  # IP地址
+        # 'HOST': 'localhost',  # IP地址
+        'HOST': '192.168.23.141',  # IP地址
         'PORT': '3306',  # 端口号
     }
 }
@@ -177,7 +178,8 @@ EMAIL_FROM = '天天生鲜<configureadmin@163.com>'  # 收件人看到的发件�
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  # 设置redis服务的IP地址与端口号以及哪个数据库
+        # "LOCATION": "redis://127.0.0.1:6379/2",  # 设置redis服务的IP地址与端口号以及哪个数据库
+        "LOCATION": "redis://192.168.23.141:6379/2",  # 设置redis服务的IP地址与端口号以及哪个数据库
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             # "PASSWORD": "password",  # redis密码,如果redis设置了密码需要加上这一项

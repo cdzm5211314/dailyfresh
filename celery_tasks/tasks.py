@@ -11,7 +11,7 @@
 # django.setup()
 
 # 使用celery:结合redis数据库
-# 1.需要安装: pip install celery
+# 1.Pyhon环境中(虚拟环境)需要安装: pip install celery
 from celery import Celery
 from django.conf import settings
 from django.core.mail import send_mail
@@ -19,7 +19,8 @@ from django.core.mail import send_mail
 # 2.创建Celery示例对象
 # main参数: 随便写一个字符串,一般就写该文件的位置路径信息
 # broker参数: 使用redis作为中间件,所以需要启动redis服务,需要redis数据库所在的ip地址,端口号及使用哪个数据库
-app = Celery('celery_tasks.tasks',broker='redis://127.0.0.1:6379/8')  # 未设置redis密码,设置密码报错未解决...
+# app = Celery('celery_tasks.tasks',broker='redis://127.0.0.1:6379/2')  # 未设置redis密码,设置密码报错未解决...
+app = Celery('celery_tasks.tasks',broker='redis://192.168.23.141:6379/2')  # 未设置redis密码,设置密码报错未解决...
 
 # 3.任务发起者:定义发出任务函数
 @app.task

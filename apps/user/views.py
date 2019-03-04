@@ -173,18 +173,18 @@ class RegisterView(View):
         token = token.decode()  # 把bytes数据转换成字符串类型数据,decode()默认是utf-8
 
         # 给注册用户发送邮件:
-        # from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
-        # send_register_active_email.delay(email,username,token)  # 发出任务
+        from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
+        send_register_active_email.delay(email,username,token)  # 发出任务
 
         # 给注册用户发送邮件:
-        subject = '天天生鲜欢迎信息'  # 邮件主题信息
-        # 邮件正文内容,message不能解析html信息,所以需要使用:html_message
-        message = ''
-        from_email = settings.EMAIL_FROM  # 发件人邮箱
-        recipient_list = [email]  # 收件人邮箱列表
-        html_message = '<h1>%s,欢迎你成为天天生鲜注册会员,</h1>请点击下面链接激活你的账户<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
-            username, token, token)
-        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+        # subject = '天天生鲜欢迎信息'  # 邮件主题信息
+        # # 邮件正文内容,message不能解析html信息,所以需要使用:html_message
+        # message = ''
+        # from_email = settings.EMAIL_FROM  # 发件人邮箱
+        # recipient_list = [email]  # 收件人邮箱列表
+        # html_message = '<h1>%s,欢迎你成为天天生鲜注册会员,</h1>请点击下面链接激活你的账户<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
+        #     username, token, token)
+        # send_mail(subject, message, from_email, recipient_list, html_message=html_message)
 
         # 返回应答,跳转到主页
         return redirect(reverse('goods:index'))
