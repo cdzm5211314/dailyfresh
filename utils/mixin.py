@@ -14,7 +14,7 @@ class LoginRequiredMixin(object):
     def as_view(cls, **initkwargs):
         # 调用父类的as_view
         view = super(LoginRequiredMixin,cls).as_view(**initkwargs)
-        print(view,type(view))
+        # print(view,type(view))
         return login_required(view)
 
 # 2.在需要做限制的类视图中继承1.中的自定义类

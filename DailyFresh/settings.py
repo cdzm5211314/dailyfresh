@@ -110,9 +110,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -193,4 +195,11 @@ SESSION_CACHE_ALIAS = "default"
 # 配置登陆url地址,不使用django自带的: # /accounts/login
 LOGIN_URL = '/user/login'
 
+# 修改文件存储类的配置项
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.FastDFSStorage'
+
+# 设置fdfs使用的client.conf文件路径
+FDFS_CLIENT_CONFIG = './utils/fastdfs/client.conf'
+# 设置fdfs存储服务器nginx的IP与端口号
+FDFS_NGINX_URL = 'http:192.168.23.141:8888/'
 
