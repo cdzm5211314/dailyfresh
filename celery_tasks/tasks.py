@@ -4,10 +4,11 @@
 # @Date : 2019-01-14 14:50
 
 # 任务处理者:(celery_tasks.tasks文件)加入如下内容:
-# django环境初始化
+# 加载django项目的配置信息
 # import os
-# import django
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DailyFresh.settings")
+# 导入django,并启动django项目
+# import django
 # django.setup()
 
 # 使用celery:结合redis数据库
