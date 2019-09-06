@@ -85,7 +85,7 @@ DATABASES = {
         'USER': 'root',  # mysql数据库用户名
         'PASSWORD': 'root',  # mysql数据库登陆密码
         # 'HOST': 'localhost',  # IP地址
-        'HOST': '192.168.23.141',  # IP地址
+        'HOST': '192.168.208.128',  # IP地址
         'PORT': '3306',  # 端口号
     }
 }

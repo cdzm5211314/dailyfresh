@@ -19,9 +19,9 @@ from django.core.mail import send_mail
 
 # 2.创建Celery示例对象
 # main参数: 随便写一个字符串,一般就写该文件的位置路径信息
-# broker参数: 使用redis作为中间件,所以需要启动redis服务,需要redis数据库所在的ip地址,端口号及使用哪个数据库
-# app = Celery('celery_tasks.tasks',broker='redis://127.0.0.1:6379/2')  # 未设置redis密码,设置密码报错未解决...
-app = Celery('celery_tasks.tasks',broker='redis://192.168.23.141:6379/2')  # 未设置redis密码,设置密码报错未解决...
+# broker参数: 使用redis作为中间人,所以需要启动redis服务,需要redis数据库所在的ip地址,端口号及使用哪个数据库
+# app = Celery('celery_tasks.tasks',broker='redis://127.0.0.1:6379/2')  # redis无密码
+app = Celery('celery_tasks.tasks',broker='redis://:password@192.168.208.128:6379/3')  # redis有密码
 
 # 3.任务发起者:定义发出任务函数
 @app.task
