@@ -13,10 +13,12 @@ class FastDFSStorage(Storage):
     def __init__(self, client_conf=None, nginx_url=None):
         '''初始化操作'''
         if client_conf is None:
+            # client_conf = './utils/fastdfs/client.conf'
             client_conf = settings.FDFS_CLIENT_CONFIG
         self.client_conf = client_conf
 
         if nginx_url is None:
+            # nginx_url = 'http://192.168.208.128:8888/'
             nginx_url = settings.FDFS_NGINX_URL
         self.nginx_url = nginx_url
 
@@ -29,7 +31,7 @@ class FastDFSStorage(Storage):
         # name: 上传文件的名字
         # content: 包含上传文件内容的File对象
         # 创建Fdfs_client对象
-        # client = Fdfs_client('utils/fastdfs/client.conf')
+        # client = Fdfs_client('./utils/fastdfs/client.conf')
         client = Fdfs_client(self.client_conf)
 
         # 上传文件到 fdfs系统总
@@ -51,5 +53,5 @@ class FastDFSStorage(Storage):
     def url(self, file_url):
         '''返回访问文件的url路径file_url = file_id'''
         # return file_url
-        # return 'http://192.168.23.141:8888' + file_url
+        # return 'http://192.168.208.128:8888' + file_url
         return self.nginx_url + file_url

@@ -174,7 +174,7 @@ class RegisterView(View):
 
         # 给注册用户发送邮件:
         from celery_tasks.tasks import send_register_active_email  # 使用celery异步发送邮件
-        send_register_active_email.delay(email,username,token)  # 发出任务
+        send_register_active_email.delay(email, username, token)  # 发出任务
 
         # 给注册用户发送邮件:
         # subject = '天天生鲜欢迎信息'  # 邮件主题信息
@@ -307,16 +307,18 @@ class UserInfoView(LoginRequiredMixin, View):
         history_key = 'history_%d' % user.id
 
         # 根据redis中key的值获取最近浏览的5个商品的id
-        sku_ids = conn.lrange(history_key,0,4)
+        sku_ids = conn.lrange(history_key, 0, 4)
 
         # 遍历获取用户浏览的商品信息
         goods_list = []
         for id in sku_ids:
             goods = GoodsSKU.objects.get(id=id)
             goods_list.append(goods)
+        # goods_list = [GoodsSKU.objects.get(pk=sku_id) for sku_id in sku_ids]
+        # goods_list = GoodsSKU.objects.filter(id__in = sku_ids )
 
         # 组织上下文信息
-        context = {'page': 'user', 'address': address,'goods_list':goods_list}
+        context = {'page': 'user', 'address': address, 'goods_list': goods_list}
 
         return render(request, 'user_center_info.html', context)
         # return render(request, 'user_center_info.html', {'page': 'user', 'address': address,'goods_list':goods_list})
@@ -341,7 +343,7 @@ class AddressView(LoginRequiredMixin, View):
         # print(user,type(user))  # django.utils.functional.SimpleLazyObject
         # try:
         #     # address = Address.objects.get(user=user, is_default=True)  # is_default = True 时,为默认收货地址
-        #     # 上诉获取登陆用户代码报错:
+        #     # 上述获取登陆用户代码报错:
         #     # Cannot query "admin1": Must be "User" instance.   # admin1 <class 'django.utils.functional.SimpleLazyObject'>
         #     address = Address.objects.get(user_id=user.id, is_default=True)  # is_default = True 时,为默认收货地址
         # except Address.DoesNotExist:
