@@ -12,6 +12,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         from celery_tasks.tasks import generate_static_index_html
         generate_static_index_html.delay()
 
+
         # 清除首页的缓存数据
         cache.delete('index_page_data')
 
@@ -21,6 +22,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         # 发出任务，让celery worker重新生成首页静态页
         from celery_tasks.tasks import generate_static_index_html
         generate_static_index_html.delay()
+
 
         # 清除首页的缓存数据
         cache.delete('index_page_data')
