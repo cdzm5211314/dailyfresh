@@ -81,7 +81,8 @@ WSGI_APPLICATION = 'DailyFresh.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dailyfresh',  # 数据库名称
+        # 'NAME': 'dailyfresh',  # 数据库名称
+        'NAME': 'dailyfreshtest',  # 数据库名称
         'USER': 'root',  # mysql数据库用户名
         'PASSWORD': 'root',  # mysql数据库登陆密码
         # 'HOST': 'localhost',  # IP地址
