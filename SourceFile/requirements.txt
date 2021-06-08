@@ -11,7 +11,7 @@ greenlet==0.4.15
 itsdangerous==1.1.0
 kombu==4.2.2.post1
 monotonic==1.5
-Pillow==5.4.1
+Pillow==8.2.0
 PyMySQL==0.9.3
 pytz==2018.9
 pywin32==224
